@@ -99,8 +99,8 @@ def database(sql):
 @app.route('/auth', methods = ['POST'])
 def auth():
 
-    POST_USERNAME = request.get_json()["inputEmail"]
-    POST_PASSWORD = request.get_json()["inputPassword"]
+    POST_USERNAME = request.get_json()["user"]
+    POST_PASSWORD = request.get_json()["password"]
 
     print POST_USERNAME
     print POST_PASSWORD
