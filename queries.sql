@@ -63,7 +63,7 @@ UPDATE `Course`
 SET `title` = input_title, `semester` = input_semester, `code` = input_code, `year` = input_year
 WHERE `id` = input_id;
 
--- 14. List all Modules
+-- 14. List all modules
 SELECT *
 FROM `Module`;
 
@@ -72,21 +72,21 @@ SELECT m.`title`
 FROM `Course` c, `Module` m
 WHERE m.`course-fk` = c.`id` AND c.`id` = input_id;
 
--- 15. List of modules per class for a given user 
+-- 16. List of modules per class for a given user 
 SELECT c.`title`, m.`title`
 FROM `User` u, `Registration` r, `Course` c, `Module` m
 WHERE m.`course-fk` = c.`id` AND u.`id` = r.`user-fk` AND r.`course-fk` = c.`id` AND u.`id` = input_id;
 
--- 16. Add a module for a course
+-- 17. Add a module for a course
 INSERT INTO `Module`
 (`id`, `title`, `course-fk`)
 VALUES (next_id, input_title, input_course-fk);
 
--- 17. Delete a module for a given course
+-- 18. Delete a module for a given course
 DELETE FROM `Module`
 WHERE `id` = input_id;
 
--- 18. Update a module for a given course
+-- 19. Update a module for a given course
 UPDATE `Module`
 SET `title` = input_title
 WHERE `id` = input_id;
