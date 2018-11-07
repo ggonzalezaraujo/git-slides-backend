@@ -12,9 +12,11 @@ def generateUsers(db):
         input_password = character + 'abc123'
         input_type = '2' # or whatever student is, I don't remember
 
+        insert_tuple = (input_user_id, input_first_name, input_last_name, input_email, input_password, input_type)
+
         c.execute('''INSERT INTO `User`
         (`id`, `first_name`, `last_name`, `email`, `password`, `type-fk`)
-        VALUES (input_user_id, input_first_name, input_last_name, input_email, input_password, input_type);
+        VALUES (?, ?, ?, ?, ?, ?''', insert_tuple);
 
     for i in (0, 20):
         input_user_id = i + ____#next id number
@@ -22,11 +24,13 @@ def generateUsers(db):
         input_last_name = 'Last' + character
         input_email = first_name + last_name + '@ucmerced.edu'
         input_password = character + 'abc123'
-        input_type = '1' # or whatever prof is, I don't remember
+        input_type = '2' # or whatever student is, I don't remember
+
+        insert_tuple = (input_user_id, input_first_name, input_last_name, input_email, input_password, input_type)
 
         c.execute('''INSERT INTO `User`
         (`id`, `first_name`, `last_name`, `email`, `password`, `type-fk`)
-        VALUES (input_user_id, input_first_name, input_last_name, input_email, input_password, input_type);
+        VALUES (?, ?, ?, ?, ?, ?''', insert_tuple);
 
     db.commit()
 
