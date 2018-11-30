@@ -102,26 +102,28 @@ def auth():
     POST_USERNAME = request.get_json()["user"]
     POST_PASSWORD = request.get_json()["password"]
 
-    print POST_USERNAME
-    print POST_PASSWORD
-
-
-    query = "SELECT `id`, `password` FROM `User` WHERE `email` = '%s'" % (POST_USERNAME)
+    query = "SELECT `id`, `first_name`, `last_name`, `email`, `type-fk` FROM `User` WHERE `email` = '%s' AND `password` = '%s'" % (POST_USERNAME, POST_PASSWORD)
     result = database(query)
-    
+
+    user_id = result[0][0]
+    first_name = result[0][1]
+    last_name = result[0][2]
+    email = result[0][3]
+    type_fk = result[0][4]
+
+    query2 = "SELECT C.id, C.title FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d'" % (user_id)
+    result2 = database(query2)
+    courses = []
+
+    for i in result2:
+        courses.append({"id": i[0], "name": i[1]})
+
     if len(result) == 0:
-        return "Incorrect login details"
+        # return "Incorrect login details"
+        return jsonify(-1)
     else:
-        row = result[0]
-
-        user_id = row[0]
-        user_password = row[1]
-
-        if POST_PASSWORD == user_password:
-            session['user-id'] = user_id
-            return render_template('courses.html', id = user_id)
-        else:
-            return "Incorrect login detials"
+        session['user-id'] = user_id
+        return jsonify(user_id, first_name, last_name, email, type_fk, courses)
 
 
 
@@ -174,6 +176,7 @@ def modules():
 
     else:
         return "Not Logged In"
+        
 
 @app.route('/module', methods = ['GET', 'POST'])
 def module():
@@ -217,7 +220,7 @@ def module():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='0.0.0.0', port=4000)
+    app.run(debug=True,host='172.20.10.2', port=4000)
 
 
     
