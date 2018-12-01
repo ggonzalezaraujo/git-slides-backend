@@ -105,25 +105,40 @@ def auth():
     query = "SELECT `id`, `first_name`, `last_name`, `email`, `type-fk` FROM `User` WHERE `email` = '%s' AND `password` = '%s'" % (POST_USERNAME, POST_PASSWORD)
     result = database(query)
 
-    user_id = result[0][0]
-    first_name = result[0][1]
-    last_name = result[0][2]
-    email = result[0][3]
-    type_fk = result[0][4]
-
-    query2 = "SELECT C.id, C.title FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d'" % (user_id)
-    result2 = database(query2)
-    courses = []
-
-    for i in result2:
-        courses.append({"id": i[0], "name": i[1]})
-
     if len(result) == 0:
         # return "Incorrect login details"
         return jsonify(-1)
-    else:
+    else :
+
+        user_id = result[0][0]
+        first_name = result[0][1]
+        last_name = result[0][2]
+        email = result[0][3]
+        type_fk = result[0][4]
+
+        query2 = "SELECT C.id, C.title FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d'" % (user_id)
+        result2 = database(query2)
+        courses = []
+        modules = []
+
+        for i in result2:
+            courses.append({"id": i[0], "name": i[1]})
+
+        print result2[0][0]
+
+        query3 = "SELECT M.id, M.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(user_id), int(result2[0][0]))
+        result3 = database(query3)
+
+        for i in result3:
+            modules.append({"module_id": i[0], "name": i[1]})
+
+        print result3
+
+
+        
+
         session['user-id'] = user_id
-        return jsonify(user_id, first_name, last_name, email, type_fk, courses)
+        return jsonify(user_id, first_name, last_name, email, type_fk, courses, modules)
 
 
 
@@ -176,7 +191,7 @@ def modules():
 
     else:
         return "Not Logged In"
-        
+
 
 @app.route('/module', methods = ['GET', 'POST'])
 def module():
