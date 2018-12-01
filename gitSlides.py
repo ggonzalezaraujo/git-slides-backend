@@ -47,20 +47,20 @@ def extraction(commands, idList, module):
     return slides
 
 
-@app.route("/presentation/<int:id>/<string:module>")
-def presentation(id, module):
-    os.system("git checkout master")
+# @app.route("/presentation/<int:id>/<string:module>")
+# def presentation(id, module):
+#     os.system("git checkout master")
 
-    idList = ids()
-    commands = commandLines(idList)
-    slides = extraction(commands, idList, module)
+#     idList = ids()
+#     commands = commandLines(idList)
+#     slides = extraction(commands, idList, module)
 
-    if slides == 'Could NOT Open File':
-        return "File NOT FOUND"
+#     if slides == 'Could NOT Open File':
+#         return "File NOT FOUND"
 
-    lecture = {"id": id, "slides": slides}
+#     lecture = {"id": id, "slides": slides}
 
-    return jsonify(lecture)
+#     return jsonify(lecture)
 
 
 @app.route("/execute")
@@ -134,9 +134,6 @@ def auth():
 
         print result3
 
-
-        
-
         session['user-id'] = user_id
         return jsonify(user_id, first_name, last_name, email, type_fk, courses, modules)
 
@@ -163,34 +160,78 @@ def courses():
         else:
             return "Not Logged In"
 
-
-@app.route('/modules')
+@app.route('/modules', methods = ['GET'])
 def modules():
-    userID = request.args.get('id')
-    courseID = request.args.get('course')
+    userID = request.args.get('user_id')
+    courseID = request.args.get('course_id')
 
-    if session.get('user-id') is not None:
-        user_id = session['user-id']
+    if (userID and courseID) is not None:
+        modules = []
+        query = "SELECT M.`id`, M.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(userID), int(courseID))
+        result = database(query)
 
-        if int(userID) == user_id:
-            query = "SELECT C.`id` FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(userID), int(courseID))
-            result = database(query)
+        for i in result:
+            modules.append({"module_id": i[0], "name": i[1]})
 
-            if len(result) == 0:
-                return "Invalid Course"
+        return jsonify(modules)  
+    else :
+        return jsonify(-1)  
 
-            else:
-                query = "SELECT M.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(userID), int(courseID))
-                result = database(query)
-                session['course-id'] = courseID
 
-                return jsonify(result)
+@app.route('/presentation')
+def presentation():
+    userID = request.args.get('user_id')
+    courseID = request.args.get('course_id')
+    moduleID = request.args.get('module_id')
 
-        else:
-            return "Incorrect User"
+    if (courseID and moduleID) is not None:
+        #presentation = []
+        query = "SELECT P.`file` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
+        result = database(query)
+        return jsonify(result)
 
-    else:
-        return "Not Logged In"
+
+@app.route('/exercise')
+def exercise():
+    userID = request.args.get('user_id')
+    courseID = request.args.get('course_id')
+    moduleID = request.args.get('module_id')
+
+
+    if (courseID and moduleID) is not None:
+        #exercise = []
+        query = "SELECT E.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
+        result = database(query)
+        return jsonify(result)
+
+
+# @app.route('/modules')
+# def modules():
+#     userID = request.args.get('id')
+#     courseID = request.args.get('course')
+
+#     if session.get('user-id') is not None:
+#         user_id = session['user-id']
+
+#         if int(userID) == user_id:
+#             query = "SELECT C.`id` FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(userID), int(courseID))
+#             result = database(query)
+
+#             if len(result) == 0:
+#                 return "Invalid Course"
+
+#             else:
+#                 query = "SELECT M.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(userID), int(courseID))
+#                 result = database(query)
+#                 session['course-id'] = courseID
+
+#                 return jsonify(result)
+
+#         else:
+#             return "Incorrect User"
+
+#     else:
+#         return "Not Logged In"
 
 
 @app.route('/module', methods = ['GET', 'POST'])
