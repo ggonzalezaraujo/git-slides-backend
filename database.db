@@ -1,0 +1,393 @@
+DROP TABLE IF EXISTS `Course`;
+
+CREATE TABLE `Course` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `semester` varchar(100) NOT NULL DEFAULT '',
+  `code` varchar(100) NOT NULL DEFAULT '',
+  `year` int(4) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Course` WRITE;
+/*!40000 ALTER TABLE `Course` DISABLE KEYS */;
+
+INSERT INTO `Course` (`id`, `title`, `semester`, `code`, `year`)
+VALUES
+	(1,'OOP','Fall','CSE1',2018),
+	(2,'Algorithms','Fall','CSE2',2018),
+	(3,'Databases','Fall','CSE3',2018),
+	(4,'Data Structures','Fall','CSE4',2018),
+	(5,'Calculus','Spring','MATH1',2019),
+	(6,'Circuit Theory','Spring','ENGR1',2019),
+	(7,'Vector Calculus','Spring','MATH2',2019),
+	(8,'Computer Architecture','Spring','CSE5',2019);
+
+/*!40000 ALTER TABLE `Course` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Exercise
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Exercise`;
+
+CREATE TABLE `Exercise` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `instructions` varchar(100) NOT NULL DEFAULT '',
+  `module-fk` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `moduleFK` (`module-fk`),
+  CONSTRAINT `moduleFK` FOREIGN KEY (`module-fk`) REFERENCES `Module` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Exercise` WRITE;
+/*!40000 ALTER TABLE `Exercise` DISABLE KEYS */;
+
+INSERT INTO `Exercise` (`id`, `title`, `instructions`, `module-fk`)
+VALUES
+	(1,'Hello World','Write a Hello World program in C++',1),
+	(2,'Goodbye World','Terminate your program in C++',1),
+	(3,'Runtime','Understand Big O and Cheeri Os',2),
+	(4,'Inheritance','Stuff about inheritance',2),
+	(5,'Polymorphism','I summon the blue eyes white dragon',3),
+	(6,'Walktime','Slow it down a little there',3),
+	(7,'Terminal Basics','cd ~/root rm -rf .',4),
+	(8,'rgrep','Please finish this assignment by tonight at 11:59p',4),
+	(9,'sprintf','No longer exists, please submit BinarySearchTree.mips instead',5),
+	(10,'SQL Syntax','SELECT FROM WHERE *',5),
+	(11,'Subqueries','SELECT FROM WHERE * (SELECT FROM WHERE *)',6),
+	(12,'sqlite3','this is getting really long',6),
+	(13,'sqlite2','downgraded',7),
+	(14,'addition','\"2+2=5\" (Orwell, 1984). ',7),
+	(15,'Integrals','Trig Substitution',8),
+	(16,'Circuit Theory','I was about to complain about how this class was required for my major to my PI',8),
+	(17,'Circuit Theory 2','But then he told me that he was one of the professors that opted for that change',9),
+	(18,'Rusu','\"OMG\" - after trying to SQL inject to facebook',9),
+	(19,'Stuff','I can\'t think of anything to put here',10),
+	(20,'Linked Lists','Who needs to learn c++ syntax anyway?',10),
+	(21,'Hash Tables','I like hashbrowns more..',11),
+	(22,'Hash Browns','1 Al Pastor Torta please',11),
+	(23,'Math 22','Don\'t remember any of it, let\'s be real here',12),
+	(24,'Math 23','Yeah, definitely don\'t remember any of it',12),
+	(25,'Math 24','Yikes',13),
+	(26,'Circuit Theory 3','Then I learned that his wife teaches the class, so that made a lot of sense',13),
+	(27,'Circuit Theory 4','RIP',14),
+	(28,'Francois','\"It\'s ZED not z. I\'m Canadian.\" - Francois Blanchette',14),
+	(29,'Green\'s Theorem','Go vote (November 6)! for Ralph Nader!',15),
+	(30,'Red\'s Theorem','GOP lolol',15),
+	(31,'Hi There','khafuhufiqhiehfi',16),
+	(32,'Last One','Finallllly',16);
+
+/*!40000 ALTER TABLE `Exercise` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Module
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Module`;
+
+CREATE TABLE `Module` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `course-fk` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `courseFK` (`course-fk`),
+  CONSTRAINT `courseFK` FOREIGN KEY (`course-fk`) REFERENCES `Course` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Module` WRITE;
+/*!40000 ALTER TABLE `Module` DISABLE KEYS */;
+
+INSERT INTO `Module` (`id`, `title`, `course-fk`)
+VALUES
+	(1,'OOP Intro',1),
+	(2,'OOP Basics',1),
+	(3,'Algo Intro',2),
+	(4,'Algo Basics',2),
+	(5,'Databses Intro',3),
+	(6,'Databases Basics',3),
+	(7,'DS Intro',4),
+	(8,'DS Basics',4),
+	(9,'Calculus Intro',5),
+	(10,'Calculus Basics',5),
+	(11,'CT Intro',6),
+	(12,'CT Basics',6),
+	(13,'VC Intro',7),
+	(14,'VC Basics',7),
+	(15,'CA Intro',8),
+	(16,'CA Basics',8);
+
+/*!40000 ALTER TABLE `Module` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Presentation
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Presentation`;
+
+CREATE TABLE `Presentation` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `repo-path` varchar(100) NOT NULL DEFAULT '',
+  `file` varchar(100) NOT NULL DEFAULT '',
+  `pdf-path` varchar(100) NOT NULL DEFAULT '',
+  `module-fk` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `presentation-module` (`module-fk`),
+  CONSTRAINT `presentation-module` FOREIGN KEY (`module-fk`) REFERENCES `Module` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Presentation` WRITE;
+/*!40000 ALTER TABLE `Presentation` DISABLE KEYS */;
+
+INSERT INTO `Presentation` (`id`, `repo-path`, `file`, `pdf-path`, `module-fk`)
+VALUES
+	(1,'repos/1','Demo.cpp','pdf/1/demo.pdf',1),
+	(2,'repos/2','Basics.cpp','pdf/1/basics.pdf',2);
+
+/*!40000 ALTER TABLE `Presentation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Registration
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Registration`;
+
+CREATE TABLE `Registration` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user-fk` int(11) unsigned NOT NULL,
+  `course-fk` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `registration-user` (`user-fk`),
+  KEY `registration-course` (`course-fk`),
+  CONSTRAINT `registration-course` FOREIGN KEY (`course-fk`) REFERENCES `Course` (`id`),
+  CONSTRAINT `registration-user` FOREIGN KEY (`user-fk`) REFERENCES `User` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Registration` WRITE;
+/*!40000 ALTER TABLE `Registration` DISABLE KEYS */;
+
+INSERT INTO `Registration` (`id`, `user-fk`, `course-fk`)
+VALUES
+	(1,2,1),
+	(2,2,2),
+	(3,2,3),
+	(4,3,4),
+	(5,3,5),
+	(6,3,6),
+	(7,4,7),
+	(8,4,8),
+	(9,4,1),
+	(10,5,2),
+	(11,5,3),
+	(12,5,4),
+	(13,6,5),
+	(14,6,6),
+	(15,6,7),
+	(16,7,8),
+	(17,7,1),
+	(18,7,2),
+	(19,1,1),
+	(20,1,2),
+	(21,8,3),
+	(22,8,4),
+	(23,9,5),
+	(24,9,6),
+	(25,10,7),
+	(26,10,8);
+
+/*!40000 ALTER TABLE `Registration` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Slide
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Slide`;
+
+CREATE TABLE `Slide` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `presentation_fk` int(11) unsigned NOT NULL,
+  `code` text NOT NULL,
+  `commit` char(40) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `SLIDE-PRESENTATION` (`presentation_fk`),
+  CONSTRAINT `SLIDE-PRESENTATION` FOREIGN KEY (`presentation_fk`) REFERENCES `Presentation` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Slide` WRITE;
+/*!40000 ALTER TABLE `Slide` DISABLE KEYS */;
+
+INSERT INTO `Slide` (`id`, `presentation_fk`, `code`, `commit`)
+VALUES
+	(1,1,'//* Rainfall Problem\\n//* Giovanni Gonzalez Araujo\\n\\n//+ Problem\\n/// Write a program that will read in integers and and output their average.\\n/// Stop reading when the the number $-1$ is entered\\n','6a719f0b82712ce99cc262a406e5604a3373a072'),
+	(2,1,'//+ Strategy for Solving the Problem\\n\\n//- Read in numbers inputed by user\\n//- Stop Reading if $-1$ is entered\\n//- Create a counter\\n//- Update counter every time a number is entered\\n//- Create a sum variable\\n//- Update the sum by adding every number that is read in\\n//- Once program stops reading in numbers, calculate the average\\n//- Calculate the average by dividing the sum by the count\\n//- Display the average\\n','58a58edad206dcc8147b41e90d45c10fe70a643b'),
+	(3,1,'//+ Reading in Numbers\\n\\n#include <iostream>\\n\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n\\n    int x = 0;\\n    cin >> x;\\n    cout << x << endl;\\n\\n    return 0;\\n}\\n\\n/// The program above simply reads in an integer from the keyboard\\n/// The integer is then printed out\\n','b8e195dea6d0c21f5593527579fbe2ec3cf034b5'),
+	(4,1,'//+ Reading in multiple Numbers\\n\\n#include <iostream>\\n#include <vector>\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n    int x = 0;\\n\\n    //Vector of integers to store the numbers being read in\\n    vector<int> numbers;\\n\\n    //Read in numbers and store them in vector\\n    //Break when -1 is entered\\n    while(x != -1) {\\n        cin >> x;\\n        if(x == -1) {\\n            break;\\n        }\\n        numbers.push_back(x);\\n    }\\n\\n    //Print out numbers stored in the vector\\n    cout << \\\"Numbers Entered: \\\";\\n    for(int i = 0; i < numbers.size(); i++) {\\n        cout << numbers[i] << \\\", \\\";\\n    }\\n    return 0;\\n}\\n\\n/// The program above stores numbers read in from the keyboard to a vector\\n/// When the user enters $-1$, the program stops reading in integers\\n/// A for loop iterates through the vector of numbers and prints each one out\\n\\n','eeac3737645d2acb90fbb01dcd46505ff19868b9'),
+	(5,1,'//+ Maintaining a Count\\n\\n#include <iostream>\\n#include <vector>\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n    int x = 0;\\n    int count = 0;\\n    vector<int> numbers;\\n\\n    while(x != -1) {\\n        cin >> x;\\n\\n        if(x == -1) {\\n            break;\\n        }\\n\\n        numbers.push_back(x);\\n        count++;        //Increment count\\n    }\\n\\n    cout << \\\"Count: \\\" << count << endl;\\n    cout << \\\"Numbers Entered: \\\";\\n    for(int i = 0; i < numbers.size(); i++) {\\n        cout << numbers[i] << \\\", \\\";\\n    }\\n    return 0;\\n}\\n\\n/// Every time a new number is added to the vector, count is incremented by $1$\\n','b82afbb97cb134f41cb2b39f63d66d0b0cbecc66'),
+	(6,1,'//+ Maintaining a Sum\\n\\n#include <iostream>\\n#include <vector>\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n    int x = 0;\\n    int count = 0;\\n    float sum = 0;\\n    vector<int> numbers;\\n\\n    while(x != -1) {\\n        cin >> x;\\n        if(x == -1) {\\n            break;\\n        }\\n        numbers.push_back(x);\\n        count++;\\n        sum+= x;\\n    }\\n\\n    //Display count, sum and numbers entered\\n    cout << \\\"Count: \\\" << count << endl;\\n    cout << \\\"Sum: \\\" << sum << endl;\\n    cout << \\\"Numbers Entered: \\\";\\n    for(int i = 0; i < numbers.size(); i++) {\\n        cout << numbers[i] << \\\", \\\";\\n    }\\n    return 0;\\n}\\n\\n/// Count is incremented by $1$ every time a new number is pushed into the vector\\n/// Similarly, the value of each new number is added to the sum\\n\\n','fe370e09464286653e127ddee9c7f4a08b49dc41'),
+	(7,1,'//+ Finding the Average\\n\\n#include <iostream>\\n#include <vector>\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n    int x = 0;\\n    int count = 0;\\n    float sum = 0;\\n    float average = 0.0;\\n    vector<int> numbers;\\n\\n    while(x != -1) {\\n        cin >> x;\\n        if(x == -1) {\\n            break;\\n        }\\n        numbers.push_back(x);\\n        count++;\\n        sum+= x;\\n    }\\n    \\n    average = sum/count;\\n    cout << \\\"Count: \\\\t\\\\t \\\" << count << endl;\\n    cout << \\\"Sum: \\\\t\\\\t \\\" << sum << endl;\\n    cout << \\\"Average: \\\\t \\\" << average << endl;\\n    cout << \\\"Numbers Entered: \\\";\\n    \\n    for(int i = 0; i < numbers.size(); i++) {\\n        cout << numbers[i] << \\\", \\\";\\n    }\\n    return 0;\\n}\\n\\n/// The average is computed once there are no more numbers being read in\\n/// To compute the average, simply divide the sum by the count\\n','b2192de44d537a354f7c61dfedec0c0231349b9c'),
+	(8,1,'//+ Finished Product\\n\\n#include <iostream>\\n#include <vector>\\nusing namespace std;\\n\\nint main(int argc, const char * argv[]) {\\n    int x = 0;\\n    int count = 0;\\n    float sum = 0;\\n    float average = 0.0;\\n    vector<int> numbers;\\n\\n    while(x != -1) {\\n        cin >> x;\\n        if(x == -1) {\\n            break;\\n        }\\n        numbers.push_back(x);\\n        count++;\\n        sum+= x;\\n    }\\n\\n    //Calculate and print out the average of the numbers\\n    average = sum/count;\\n    cout << \\\"Average of Numbers Entered: \\\\t \\\" << average << endl;\\n\\n    return 0;\\n}\\n\\n/// This program reads in numbers and stores them in a vector of integers\\n/// The program stops reading in numbers when the user inputs $-1$\\n/// Laslty, the program calculates the average of the numbers stored in the vectors\\n\\n','9ef35d509202ed301aa6e6c935020a84c40fe38a');
+
+/*!40000 ALTER TABLE `Slide` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table Submission
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Submission`;
+
+CREATE TABLE `Submission` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user-fk` int(11) unsigned DEFAULT NULL,
+  `exercise-fk` int(11) unsigned DEFAULT NULL,
+  `grade` decimal(5,2) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user-submission` (`user-fk`),
+  KEY `exercise-course` (`exercise-fk`),
+  CONSTRAINT `exercise-course` FOREIGN KEY (`exercise-fk`) REFERENCES `Exercise` (`id`),
+  CONSTRAINT `user-submission` FOREIGN KEY (`user-fk`) REFERENCES `User` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `Submission` WRITE;
+/*!40000 ALTER TABLE `Submission` DISABLE KEYS */;
+
+INSERT INTO `Submission` (`id`, `user-fk`, `exercise-fk`, `grade`)
+VALUES
+	(1,2,1,95.00),
+	(2,2,2,100.00),
+	(3,2,3,85.00),
+	(4,2,4,75.00),
+	(5,2,5,35.00),
+	(6,2,6,98.00),
+	(7,2,7,92.00),
+	(8,2,8,75.00),
+	(9,2,9,85.00),
+	(10,2,10,45.00),
+	(11,2,11,100.00),
+	(12,2,12,39.00),
+	(13,3,13,76.00),
+	(14,3,14,87.00),
+	(15,3,15,90.00),
+	(16,3,16,96.00),
+	(17,3,17,87.00),
+	(18,3,18,88.00),
+	(19,3,19,88.00),
+	(20,3,20,76.00),
+	(21,3,21,56.00),
+	(22,3,22,45.00),
+	(23,3,23,78.00),
+	(24,3,24,54.00),
+	(25,4,25,23.00),
+	(26,4,26,32.00),
+	(27,4,27,15.00),
+	(28,4,28,45.00),
+	(29,4,29,36.00),
+	(30,4,30,75.00),
+	(31,4,31,35.00),
+	(32,4,32,89.00),
+	(33,4,1,90.00),
+	(34,4,2,65.00),
+	(35,4,3,78.00),
+	(36,4,4,99.00),
+	(37,5,5,45.00),
+	(38,5,6,25.00),
+	(39,5,7,78.00),
+	(40,5,8,65.00),
+	(41,5,9,45.00),
+	(42,5,10,23.00),
+	(43,5,11,90.00),
+	(44,5,12,89.00),
+	(45,5,13,98.00),
+	(46,5,14,99.00),
+	(47,5,15,78.00),
+	(48,5,16,87.00),
+	(49,6,17,65.00),
+	(50,6,18,45.00),
+	(51,6,19,68.00),
+	(52,6,20,79.00),
+	(53,6,21,76.00),
+	(54,6,22,34.00),
+	(55,6,23,67.00),
+	(56,6,24,89.00),
+	(57,6,25,90.00),
+	(58,6,26,97.00),
+	(59,6,27,96.00),
+	(60,6,28,56.00),
+	(61,7,29,64.00),
+	(62,7,30,37.00),
+	(63,7,31,8.00),
+	(64,7,32,36.00),
+	(65,7,1,78.00),
+	(66,7,2,89.00),
+	(67,7,3,99.00),
+	(68,7,4,26.00),
+	(69,7,5,93.00),
+	(70,7,6,76.00),
+	(71,7,7,59.00),
+	(72,7,8,60.00);
+
+/*!40000 ALTER TABLE `Submission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table User
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `User`;
+
+CREATE TABLE `User` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL DEFAULT '',
+  `last_name` varchar(100) NOT NULL DEFAULT '',
+  `email` varchar(100) NOT NULL DEFAULT '',
+  `password` varchar(100) NOT NULL DEFAULT '',
+  `type-fk` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `User` WRITE;
+/*!40000 ALTER TABLE `User` DISABLE KEYS */;
+
+INSERT INTO `User` (`id`, `first_name`, `last_name`, `email`, `password`, `type-fk`)
+VALUES
+	(1,'Angelo','Kyrilov','akyrilov@ucmerced.edu','abc','1'),
+	(2,'Giovanni','Gonzalez','ggonzalezaraujo@ucmerced.edu','def','4'),
+	(3,'Jonathan','Moreno','jmoreno@ucmerced.edu','123','4'),
+	(4,'Mighty','Chen','mchen@ucmerced.edu','456','4'),
+	(5,'Karely','Alvarez','kalvarez@ucmerced.edu','321','4'),
+	(6,'Jose','Alvarez','jalvarez@ucmerced.edu','cba','4'),
+	(7,'Juan','Ibarra','jibarra@ucmerced.edu','abd','4'),
+	(8,'Florin','Rusu','frusu@ucmerced.edu','lmn','1'),
+	(9,'Daniel','Leung','dleung@ucmerced.edu','bbb','1'),
+	(10,'Lei','Wey','lwey@ucmerced.edu','gba','1');
+
+/*!40000 ALTER TABLE `User` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table UserType
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `UserType`;
+
+CREATE TABLE `UserType` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `UserType` WRITE;
+/*!40000 ALTER TABLE `UserType` DISABLE KEYS */;
+
+INSERT INTO `UserType` (`id`, `type`)
+VALUES
+	(1,'Admin'),
+	(2,'Instructor'),
+	(3,'TA'),
+	(4,'Student');

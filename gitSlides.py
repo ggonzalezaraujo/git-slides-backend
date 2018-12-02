@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_cors import CORS
+# from flask_cors import CORS
 from flask import flash, redirect, render_template, request, session, abort, make_response
 from sqlalchemy.orm import sessionmaker
 from flask import jsonify
@@ -11,8 +11,8 @@ import MySQLdb
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'super secret'
-CORS(app)
+# app.config['SECRET_KEY'] = 'super secret'
+# CORS(app)
 
 def ids():
     output = subprocess.check_output(['git', 'rev-list', 'HEAD'])
@@ -34,7 +34,7 @@ def extraction(commands, idList, module):
     for i in range(len(commands)):
         os.system("git checkout master")
         os.system(commands[i])
-        
+
         try:
             file = open(module, 'r')
         except IOError:
@@ -65,7 +65,7 @@ def presentation(id, module):
 
 @app.route("/execute")
 def execute():
-    commit = request.args.get("id") 
+    commit = request.args.get("id")
 
     os.system("git checkout master")
     os.system("git checkout " + commit)
@@ -94,7 +94,7 @@ def database(sql):
     db.close()
 
     return result
-    
+
 
 @app.route('/auth', methods = ['POST'])
 def auth():
@@ -108,7 +108,7 @@ def auth():
 
     query = "SELECT `id`, `password` FROM `User` WHERE `email` = '%s'" % (POST_USERNAME)
     result = database(query)
-    
+
     if len(result) == 0:
         return "Incorrect login details"
     else:
@@ -133,7 +133,7 @@ def courses():
 
         if session.get('user-id') is not None:
             user_id = session['user-id']
-            
+
             if int(userID) == user_id:
                 query = "SELECT C.title FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d'" % (user_id)
                 result = database(query)
@@ -190,7 +190,7 @@ def module():
 
                 query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(course_id), int(moduleID))
                 result = database(query)
-                
+
                 if len(result) == 0:
                     return "Invalid Module"
 
@@ -199,7 +199,7 @@ def module():
 
             else:
                 return "Incorrect User"
-        
+
         else:
             return "Not Logged In"
 
@@ -207,7 +207,7 @@ def module():
         userID = request.get_json()['id']
         moduleID = request.get_json()['module']
 
-        
+
 
 
         return data["test"]
@@ -218,8 +218,3 @@ def module():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     app.run(debug=True,host='0.0.0.0', port=4000)
-
-
-    
-
-    
