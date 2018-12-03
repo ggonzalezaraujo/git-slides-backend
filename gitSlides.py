@@ -47,20 +47,20 @@ def extraction(commands, idList, module):
     return slides
 
 
-# @app.route("/presentation/<int:id>/<string:module>")
-# def presentation(id, module):
-#     os.system("git checkout master")
+@app.route("/gitpresentation/<int:id>/<string:module>")
+def gitpresentation(id, module):
+    os.system("git checkout master")
 
-#     idList = ids()
-#     commands = commandLines(idList)
-#     slides = extraction(commands, idList, module)
+    idList = ids()
+    commands = commandLines(idList)
+    slides = extraction(commands, idList, module)
 
-#     if slides == 'Could NOT Open File':
-#         return "File NOT FOUND"
+    if slides == 'Could NOT Open File':
+        return "File NOT FOUND"
 
-#     lecture = {"id": id, "slides": slides}
+    lecture = {"id": id, "slides": slides}
 
-#     return jsonify(lecture)
+    return jsonify(lecture)
 
 
 @app.route("/execute")
@@ -109,7 +109,6 @@ def auth():
         # return "Incorrect login details"
         return jsonify(-1)
     else :
-
         user_id = result[0][0]
         first_name = result[0][1]
         last_name = result[0][2]
@@ -160,6 +159,7 @@ def courses():
         else:
             return "Not Logged In"
 
+
 @app.route('/modules', methods = ['GET'])
 def modules():
     userID = request.args.get('user_id')
@@ -188,6 +188,7 @@ def presentation():
         #presentation = []
         query = "SELECT P.`file` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
         result = database(query)
+        print result
         return jsonify(result)
 
 
@@ -201,7 +202,54 @@ def exercise():
     if (courseID and moduleID) is not None:
         #exercise = []
         query = "SELECT E.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
+        
         result = database(query)
+        print result
+        return jsonify(result)
+
+@app.route('/gradebook')
+def gradebook():
+    userID = request.args.get('user_id')
+    #courseID = request.args.get('course_id')
+    
+    query = "SELECT SQ1.course_title, SUM(`points`)/SUM(e.`total`) FROM `Exercise` e, `Module` m, (SELECT c.`title` as course_title, s.`exercise-fk`, MAX(`grade`) as points FROM `Submission` s, `Exercise` e, `Module` m, `Course` c WHERE s.`exercise-fk` = e.`id` AND e.`module-fk` = m.`id` AND m.`course-fk` = c.`id` AND s.`user-fk` = '%d' GROUP BY `exercise-fk`) AS SQ1 WHERE e.`id` = SQ1.`exercise-fk` AND e.`module-fk` = m.`id` GROUP BY SQ1.course_title" % (int(userID))
+    result = database(query)
+
+    grades = []
+    for i in result:
+        grades.append({"course_name": i[0], "grade": float(i[1])})
+
+    # print(grades)
+
+    return jsonify(grades)
+
+
+@app.route('/slides')
+def slides():
+    userID = request.args.get('user_id')
+    courseID = request.args.get('course_id')
+    moduleID = request.args.get('module_id')
+    presentationID = request.args.get('presentation_id')
+
+    query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND P.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(presentationID))
+    
+    result = database(query)
+    print result
+    return jsonify(result)
+
+@app.route('/exercise/instructions')
+def exercise_instructions():
+    userID = request.args.get('user_id')
+    courseID = request.args.get('course_id')
+    moduleID = request.args.get('module_id')
+    exerciseID = request.args.get('exercise_id')
+
+    if (courseID and moduleID) is not None:
+        #exercise = []
+        query = "SELECT E.`instructions` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND E.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(exerciseID))
+        
+        result = database(query)
+        
         return jsonify(result)
 
 
@@ -234,42 +282,42 @@ def exercise():
 #         return "Not Logged In"
 
 
-@app.route('/module', methods = ['GET', 'POST'])
-def module():
-    if request.method == 'GET':
+# @app.route('/module', methods = ['GET', 'POST'])
+# def module():
+#     if request.method == 'GET':
 
-        userID = request.args.get('id')
-        moduleID = request.args.get('module')
+#         userID = request.args.get('id')
+#         moduleID = request.args.get('module')
 
-        if session.get('user-id') is not None:
-            user_id = session['user-id']
+#         if session.get('user-id') is not None:
+#             user_id = session['user-id']
 
-            if int(userID) == user_id:
-                course_id = session['course-id']
+#             if int(userID) == user_id:
+#                 course_id = session['course-id']
 
-                query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(course_id), int(moduleID))
-                result = database(query)
+#                 query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(course_id), int(moduleID))
+#                 result = database(query)
                 
-                if len(result) == 0:
-                    return "Invalid Module"
+#                 if len(result) == 0:
+#                     return "Invalid Module"
 
-                else:
-                    return jsonify(result)
+#                 else:
+#                     return jsonify(result)
 
-            else:
-                return "Incorrect User"
+#             else:
+#                 return "Incorrect User"
         
-        else:
-            return "Not Logged In"
+#         else:
+#             return "Not Logged In"
 
-    elif request.method == 'POST':
-        userID = request.get_json()['id']
-        moduleID = request.get_json()['module']
+#     elif request.method == 'POST':
+#         userID = request.get_json()['id']
+#         moduleID = request.get_json()['module']
 
         
 
 
-        return data["test"]
+#         return data["test"]
 
 
 
