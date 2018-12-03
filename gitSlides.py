@@ -34,7 +34,7 @@ def extraction(commands, idList, module):
     for i in range(len(commands)):
         os.system("git checkout master")
         os.system(commands[i])
-        
+
         try:
             file = open(module, 'r')
         except IOError:
@@ -65,7 +65,7 @@ def gitpresentation(id, module):
 
 @app.route("/execute")
 def execute():
-    commit = request.args.get("id") 
+    commit = request.args.get("id")
 
     os.system("git checkout master")
     os.system("git checkout " + commit)
@@ -94,7 +94,7 @@ def database(sql):
     db.close()
 
     return result
-    
+
 
 @app.route('/auth', methods = ['POST'])
 def auth():
@@ -123,7 +123,7 @@ def auth():
         for i in result2:
             courses.append({"id": i[0], "name": i[1]})
 
-        print result2[0][0]
+        print (result2[0][0])
 
         query3 = "SELECT M.id, M.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND U.`id` = '%d' AND C.`id` = '%d'" % (int(user_id), int(result2[0][0]))
         result3 = database(query3)
@@ -131,7 +131,7 @@ def auth():
         for i in result3:
             modules.append({"module_id": i[0], "name": i[1]})
 
-        print result3
+        print (result3)
 
         session['user-id'] = user_id
         return jsonify(user_id, first_name, last_name, email, type_fk, courses, modules)
@@ -146,7 +146,7 @@ def courses():
 
         if session.get('user-id') is not None:
             user_id = session['user-id']
-            
+
             if int(userID) == user_id:
                 query = "SELECT C.title FROM `User` U, `Course` C, `Registration` R WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND U.`id` = '%d'" % (user_id)
                 result = database(query)
@@ -173,9 +173,9 @@ def modules():
         for i in result:
             modules.append({"module_id": i[0], "name": i[1]})
 
-        return jsonify(modules)  
+        return jsonify(modules)
     else :
-        return jsonify(-1)  
+        return jsonify(-1)
 
 
 @app.route('/presentation')
@@ -188,7 +188,7 @@ def presentation():
         #presentation = []
         query = "SELECT P.`file` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
         result = database(query)
-        print result
+        print (result)
         return jsonify(result)
 
 
@@ -202,16 +202,16 @@ def exercise():
     if (courseID and moduleID) is not None:
         #exercise = []
         query = "SELECT E.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
-        
+
         result = database(query)
-        print result
+        print (result)
         return jsonify(result)
 
 @app.route('/gradebook')
 def gradebook():
     userID = request.args.get('user_id')
     #courseID = request.args.get('course_id')
-    
+
     query = "SELECT SQ1.course_title, SUM(`points`)/SUM(e.`total`) FROM `Exercise` e, `Module` m, (SELECT c.`title` as course_title, s.`exercise-fk`, MAX(`grade`) as points FROM `Submission` s, `Exercise` e, `Module` m, `Course` c WHERE s.`exercise-fk` = e.`id` AND e.`module-fk` = m.`id` AND m.`course-fk` = c.`id` AND s.`user-fk` = '%d' GROUP BY `exercise-fk`) AS SQ1 WHERE e.`id` = SQ1.`exercise-fk` AND e.`module-fk` = m.`id` GROUP BY SQ1.course_title" % (int(userID))
     result = database(query)
 
@@ -219,7 +219,7 @@ def gradebook():
     for i in result:
         grades.append({"course_name": i[0], "grade": float(i[1])})
 
-    # print(grades)
+    print(grades)
 
     return jsonify(grades)
 
@@ -232,9 +232,9 @@ def slides():
     presentationID = request.args.get('presentation_id')
 
     query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND P.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(presentationID))
-    
+
     result = database(query)
-    print result
+    print (result)
     return jsonify(result)
 
 @app.route('/exercise/instructions')
@@ -247,9 +247,9 @@ def exercise_instructions():
     if (courseID and moduleID) is not None:
         #exercise = []
         query = "SELECT E.`instructions` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND E.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(exerciseID))
-        
+
         result = database(query)
-        
+
         return jsonify(result)
 
 
@@ -297,7 +297,7 @@ def exercise_instructions():
 
 #                 query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(course_id), int(moduleID))
 #                 result = database(query)
-                
+
 #                 if len(result) == 0:
 #                     return "Invalid Module"
 
@@ -306,7 +306,7 @@ def exercise_instructions():
 
 #             else:
 #                 return "Incorrect User"
-        
+
 #         else:
 #             return "Not Logged In"
 
@@ -314,7 +314,7 @@ def exercise_instructions():
 #         userID = request.get_json()['id']
 #         moduleID = request.get_json()['module']
 
-        
+
 
 
 #         return data["test"]
@@ -324,9 +324,5 @@ def exercise_instructions():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='172.20.10.2', port=4000)
-
-
-    
-
-    
+    # app.run(debug=True,host='172.20.10.2', port=4000)
+    app.run(debug=True,host='0.0.0.0', port=4000)
