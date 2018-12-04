@@ -83,7 +83,7 @@ def execute():
 
 #Takes in a query and returns the result
 def database(sql):
-    db = MySQLdb.connect(host = "localhost", user = "root", passwd = "", db = "GitSlides")
+    db = MySQLdb.connect(host = "localhost", user = "root", passwd = "loser", db = "GitSlides")
     cur = db.cursor()
     result = []
 
@@ -186,10 +186,15 @@ def presentation():
 
     if (courseID and moduleID) is not None:
         #presentation = []
-        query = "SELECT P.`file` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
+        query = "SELECT P.`id`, P.`file` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
         result = database(query)
-        print (result)
-        return jsonify(result)
+
+        presentations = []
+        for i in result:
+            presentations.append({"presentation_id": i[0], "presentation_file": i[1]})
+
+        print (presentations)
+        return jsonify(presentations)
 
 
 @app.route('/exercise')
@@ -200,12 +205,15 @@ def exercise():
 
 
     if (courseID and moduleID) is not None:
-        #exercise = []
-        query = "SELECT E.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
-
+        query = "SELECT E.`id`, E.`title` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d'" % (int(userID), int(courseID), int(moduleID))
         result = database(query)
-        print (result)
-        return jsonify(result)
+
+        exercises = []
+        for i in result:
+            exercises.append({"exercise_id": i[0], "exercise_title": i[1]})
+
+        print (exercises)
+        return jsonify(exercises)
 
 @app.route('/gradebook')
 def gradebook():
