@@ -239,11 +239,14 @@ def slides():
     moduleID = request.args.get('module_id')
     presentationID = request.args.get('presentation_id')
 
-    query = "SELECT S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND P.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(presentationID))
-
+    query = "SELECT S.`id`, S.`code` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Presentation` P, `Slide` S WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = P.`module-fk` AND P.`id` = S.`presentation_fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND P.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(presentationID))
     result = database(query)
-    print (result)
-    return jsonify(result)
+    slides = []
+    for i in result:
+        slides.append({"slide_id": i[0], "slide_code": i[1]})
+
+    print (slides)
+    return jsonify(slides)
 
 @app.route('/exercise/instructions')
 def exercise_instructions():
@@ -254,11 +257,15 @@ def exercise_instructions():
 
     if (courseID and moduleID) is not None:
         #exercise = []
-        query = "SELECT E.`instructions` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND E.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(exerciseID))
+        query = "SELECT E.`id`, E.`instructions` FROM `User` U, `Course` C, `Registration` R, `Module` M, `Exercise` E WHERE U.`id` = R.`user-fk` AND R.`course-fk` = C.`id` AND C.`id` = M.`course-fk` AND M.`id` = E.`module-fk` AND U.`id` = '%d' AND C.`id` = '%d' AND M.`id` = '%d' AND E.`id` = '%d'" % (int(userID), int(courseID), int(moduleID), int(exerciseID))
 
         result = database(query)
 
-        return jsonify(result)
+        instructions = []
+        for i in result:
+            instructions.append({"exercise_id": i[0], "exercise_instructions": i[1]})
+
+        return jsonify(instructions)
 
 
 # @app.route('/modules')
